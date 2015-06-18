@@ -107,12 +107,12 @@ tidy_data[1:10,1:5]
 
 1. subject_number: numbers from 1 to 30 refering to the person of the observation
 2. activity_label: the type of activity of the corresponging observation
-* WALKING
-* WALKING_UPSTAIRS 
-* WALKING_DOWNSTAIRS 
-* SITTING
-* STANDING
-* LAYING
+  * WALKING
+  * WALKING_UPSTAIRS 
+  * WALKING_DOWNSTAIRS 
+  * SITTING
+  * STANDING
+  * LAYING
 3. tBodyAcc-mean()-X
 4. tBodyAcc-mean()-Y
 5. tBodyAcc-mean()-Z
