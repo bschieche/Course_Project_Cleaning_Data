@@ -16,6 +16,26 @@ features <- as.matrix(features)[,2]
 mean_or_std_index <- c(grep("mean()",features,fixed=TRUE),grep("std()",features,fixed=TRUE))
 features <- features[mean_or_std_index]
 
+library(stringr)
+
+# function to modify the features variable names
+cleanFeatureNames <- function(features) {
+        # remove () and -, replace mean by MEAN and std by STD
+        features <- sub("BodyBody","Body",features)
+        features <- sub("std","STD",features)
+        features <- sub("mean","MEAN",features)
+        features <- gsub("-","",gsub("\\(\\)","",features))
+        # if first letter is t, replace by time, if first letter is f, replace by freq
+        if (substr(features,1,1)=="t"){
+                sub("t","time",features) 
+        }
+        else if (substr(features,1,1)=="f"){
+                sub("f","freq",features)
+        }
+}
+# apply cleanFeatureNames to all characters in features
+features <- sapply(features,cleanFeatureNames,USE.NAMES=FALSE)
+                
 # Extracts only the measurements on the mean and standard deviation 
 # for each measurement and merges them to one data set.
 test <- test[,mean_or_std_index]
@@ -42,7 +62,7 @@ subjectNo <- rbind(subjectNoTest,subjectNoTrain)
 alldata <- cbind(subjectNo,activityNo,alldata)
 
 # Appropriately labels the data set with descriptive variable names stored in features. 
-names(alldata) <- c('subject_number','activity_number',features)
+names(alldata) <- c('subjectNumber','activityNumber',features)
 
 # Splits alldata in data subsets where each subset refers to 
 # a pair of subject and activity number
@@ -58,8 +78,8 @@ sepdata <- split(alldata, cbind(activityNo,subjectNo))
 
 tidy_data <- data.frame(t(sapply(sepdata,colMeans)))
 # Uses descriptive activity names to name the activities in the data set.
-tidy_data$activity_number <- factor(tidy_data$activity_number, labels = labels)
-names(tidy_data)<- c('subject_number','activity_number',features)
+tidy_data$activityNumber <- factor(tidy_data$activityNumber, labels = labels)
+names(tidy_data)<- c('subjectNumber','activityNumber',features)
 
 # Writes tidy data into a new file named tidy_data.txt.
 write.table(tidy_data,file="tidy_data.txt",row.names=FALSE)

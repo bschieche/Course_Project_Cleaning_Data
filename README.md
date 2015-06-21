@@ -52,20 +52,38 @@ mean_or_std_index <- c(grep("mean()",features,fixed=TRUE),grep("std()",features,
 features <- features[mean_or_std_index]
 </code></pre>
 
-4. Extracting the corresponding measurements and combine test and train data
+4. Converting feature names to more descriptive variable names by making a help function
+and applying it to all names
+<pre><code>
+cleanFeatureNames <- function(features) {
+        features <- sub("BodyBody","Body",features)
+        features <- sub("std","STD",features)
+        features <- sub("mean","MEAN",features)
+        features <- gsub("-","",gsub("\\(\\)","",features))
+        if (substr(features,1,1)=="t"){
+                sub("t","time",features) 
+        }
+        else if (substr(features,1,1)=="f"){
+                sub("f","freq",features)
+        }
+}
+features <- sapply(features,cleanFeatureNames,USE.NAMES=FALSE)
+</code></pre>
+
+5. Extracting the corresponding measurements and combine test and train data
 <pre><code>
 test <- test[,mean_or_std_index]
 train <- train[,mean_or_std_index]
 alldata <- rbind(test,train)
 </code></pre>
 
-5. Reading activity labels
+6. Reading activity labels
 <pre><code>
 labels <- read.table("activity_labels.txt")
 labels <- as.character(labels[,2])
 </code></pre>
 
-6. Reading activity label numbers for each measurement for test and train data
+7. Reading activity label numbers for each measurement for test and train data
 and concetenating them
 <pre><code>
 activityNoTest <- read.table("test/y_test.txt",sep="")
@@ -73,7 +91,7 @@ activityNoTrain <- read.table("train/y_train.txt",sep="")
 activityNo <- rbind(activityNoTest,activityNoTrain)
 </code></pre>
 
-7. Reading subject numbers for each measurement for test and train data
+8. Reading subject numbers for each measurement for test and train data
 and concetenating them
 <pre><code>
 subjectNoTest <- read.table("test/subject_test.txt",sep="")
@@ -81,38 +99,38 @@ subjectNoTrain <- read.table("train/subject_train.txt",sep="")
 subjectNo <- rbind(subjectNoTest,subjectNoTrain)
 </code></pre>
 
-8. Adding subject and activity number to the data frame
+9. Adding subject and activity number to the data frame
 <pre><code>
 alldata <- cbind(subjectNo,activityNo,alldata)
 </code></pre>
 
-9. Setting descriptive variable nambes based on the used features
+10. Setting descriptive variable nambes based on the used features
 <pre><code>
-names(alldata) <- c('subject_number','activity_number',features)
+names(alldata) <- c('subjectNumber','activityNumber',features)
 </code></pre>
 
-10. Splitting data with respect to subject and activity number
+11. Splitting data with respect to subject and activity number
 <pre><code>
 sepdata <- split(alldata, cbind(activityNo,subjectNo))
 </code></pre>
 
-11. Calculating the mean for each group and creating new data frame from the results
+12. Calculating the mean for each group and creating new data frame from the results
 <pre><code>
 tidy_data <- data.frame(t(sapply(sepdata,colMeans)))
 </code></pre>
 
-12. Replacing the activity numbers by descriptive activity labels
+13. Replacing the activity numbers by descriptive activity labels
 <pre><code>
-tidy_data$activity_number <- factor(tidy_data$activity_number, labels = labels)
-names(tidy_data)<- c('subject_number','activity_number',features)
+tidy_data$activityNumber <- factor(tidy_data$activityNumber, labels = labels)
+names(tidy_data)<- c('subjectNumber','activityNumber',features)
 </code></pre>
 
-13. Writing tidy data set into `tidy_data.txt` without row names
+14. Writing tidy data set into `tidy_data.txt` without row names
 <pre><code>
 write.table(tidy_data,file="tidy_data.txt",row.names=FALSE)
 </code></pre>
 
-14. Printing the first 10 observations with subject number and activity label and
+15. Printing the first 10 observations with subject number and activity label and
 first three feature variables
 <pre><code>
 tidy_data[1:10,1:5]
